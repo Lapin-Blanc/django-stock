@@ -1,4 +1,6 @@
 *.py[cod]
+media/
+*.db
 
 # C extensions
 *.so
