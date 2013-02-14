@@ -1,6 +1,7 @@
 *.py[cod]
 media/
 *.db
+nohup.out
 
 # C extensions
 *.so
