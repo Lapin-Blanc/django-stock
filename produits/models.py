@@ -3,6 +3,9 @@ from django.db import models
 from django.core.exceptions import ValidationError
 from decimal import Decimal
 
+#####################
+# Fournisseurs
+#####################
 class Fournisseur(models.Model):
     nom = models.CharField(max_length=200,
         help_text="Le nom complet du fournisseur")
