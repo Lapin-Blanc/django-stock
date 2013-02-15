@@ -2,6 +2,8 @@
 from django.db import models
 from django.core.exceptions import ValidationError
 from decimal import Decimal
+from django.contrib.auth.models import User
+from django.utils import timezone
 
 #####################
 # Fournisseurs
@@ -70,3 +72,65 @@ class Produit(models.Model):
     def approvisionnement(self):
         return self.stock > self.seuil
     approvisionnement.boolean = True
+
+######################
+# Ticket
+######################
+class Ticket(models.Model):
+    moment = models.DateTimeField(default=timezone.now())
+    auteur = models.ForeignKey(User)
+    total = models.DecimalField("Total pour ce ticket", max_digits=8, decimal_places=2, blank=True, null=True)
+    
+    class Meta:
+        ordering = ["-moment",]
+    
+    def __unicode__(self):
+        return u"%s - %s" % (self.moment, self.auteur)
+    
+    def save(self, *args, **kwargs):
+        self.total = self.mouvementticket_set.aggregate(models.Sum("total_ttc"))['total_ttc__sum']
+        super(Ticket, self).save(*args, **kwargs)
+
+##########################
+# Mouvement
+##########################
+class Mouvement(models.Model):
+    auteur = models.ForeignKey(User)
+    moment = models.DateTimeField(default=timezone.now())
+    produit = models.ForeignKey(Produit)
+    qte = models.IntegerField("Quantité",
+        help_text="La quantité liée à ce mouvement, NEGATIVE pour une entrée en stock, POSITIVE pour une sortie !")
+
+    class Meta:
+        ordering = ["-moment",]
+
+    def __unicode__(self):
+        return u"%s, %s, %s, %s" % (timezone.localtime(self.moment), self.auteur, self.produit, self.qte)
+
+    def save(self, *args, **kwargs):
+        if not self.id: # le sotck n'est mis à jour que sur la création d'un mouvement
+            self.produit.stock -= self.qte # le mouvement par défaut est un retrait, il faut une quantité négative pour une entrée en stock !!!
+            self.produit.save()
+        super(Mouvement, self).save(*args, **kwargs)
+
+#############################
+# Mouvement ticket
+#############################
+class MouvementTicket(Mouvement):
+    ticket = models.ForeignKey(Ticket)
+    total_htva = models.DecimalField("Total hors TVA", max_digits=8, decimal_places=2, blank=True, null=True)
+    total_tva = models.DecimalField("Total TVA", max_digits=8, decimal_places=2, blank=True, null=True)
+    total_ttc = models.DecimalField("Total TVA comprise", max_digits=8, decimal_places=2, blank=True, null=True)
+
+    def save(self, *args, **kwargs):
+        self.auteur = self.ticket.auteur
+        self.total_htva = self.qte * self.produit.prix_vente
+        self.total_tva = self.total_htva * (1+self.produit.tva)
+        self.total_ttc = self.total_htva + self.total_tva
+        super(MouvementTicket, self).save(*args, **kwargs) 
+        self.ticket.save() # Pour mettre à jour le total sur le ticket
+
+    def prix_unitaire(self):
+        from django.utils.formats import localize
+        return localize(self.produit.prix_vente)
+    prix_unitaire.verbose_name = "Prix unitaire"
