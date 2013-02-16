@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load barcodes %}
+{% block title %}Article {{ object }}{% endblock %}
+{% block content %}
+<h1>{{ object.nom }}</h1>
+<table style="border: solid 1px grey;">
+    <tbody>
+        <tr><td colspan='2' align='center'>{{ object.ean|barcode }}</td></tr>
+        <tr><td>Nom</td><td>{{ object.nom }}</td></tr>
+        <tr><td>Nom abrégé</td><td>{{  object.nom_court }}</td></tr>
+        <tr><td>Prix d'achat</td><td>{{  object.prix_achat }}&nbsp;€</td></tr>
+        <tr><td>Prix de vente</td><td>{{ object.prix_vente }}&nbsp;€</td></tr>
+        <tr><td>Taux de TVA</td><td>{% if object.tva|stringformat:"s" == "0.6" %}6%{% endif %}{% if object.tva|stringformat:"s" == "0.21" %}21%{% endif %}</td></tr>
+        <tr><td>Stock</td><td>{{ object.stock }}</td></tr>
+        <tr><td>Seuil</td><td>{{ object.seuil }}</td></tr>
+        <tr><td>Lot</td><td>{{ object.lot  }}</td></tr>
+        <tr><td>Fournisseur</td><td>{{ object.fournisseur  }}</td></tr>
+    </tbody>
+</table>
+{% endblock %}

@@ -70,6 +70,9 @@ class Article(models.Model):
     def __unicode__(self):
         return self.nom
 
+    def get_absolute_url(self):
+        return "/stock/article/%s/" % self.id
+
     def approvisionnement(self):
         return self.stock > self.seuil
     approvisionnement.boolean = True
