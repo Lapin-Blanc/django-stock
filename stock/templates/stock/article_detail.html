@@ -1,17 +1,44 @@
 {% extends "base.html" %}
 {% load barcodes %}
 {% block title %}Article {{ object }}{% endblock %}
+{% block css %}
+body{
+      -webkit-print-color-adjust:exact;
+}
+table { 
+    border-spacing:0;
+    border-collapse:collapse;
+}
+th {
+    border-bottom : grey solid 3px;
+}
+tr:nth-child(1) {
+    font-weight : bold;
+    border-bottom : grey solid 1px;
+}
+td:nth-child(1) {
+    border-right : grey solid 1px;
+    padding : 0px 10px;
+    margin : 0px;
+}
+td:last-child {
+    text-align : right;
+    padding : 0px 10px;
+    margin : 0px;
+}
+{% endblock %}
 {% block content %}
-<h1>{{ object.nom }}</h1>
 <table style="border: solid 1px grey;">
+    <thead>
+        <tr><th colspan='2' align='center'>{{ object.ean|barcode }}</th></tr>
+    </thead>
     <tbody>
-        <tr><td colspan='2' align='center'>{{ object.ean|barcode }}</td></tr>
         <tr><td>Nom</td><td>{{ object.nom }}</td></tr>
         <tr><td>Nom abrégé</td><td>{{  object.nom_court }}</td></tr>
         <tr><td>Prix d'achat</td><td>{{  object.prix_achat }}&nbsp;€</td></tr>
         <tr><td>Prix de vente</td><td>{{ object.prix_vente }}&nbsp;€</td></tr>
-        <tr><td>Taux de TVA</td><td>{% if object.tva|stringformat:"s" == "0.6" %}6%{% endif %}{% if object.tva|stringformat:"s" == "0.21" %}21%{% endif %}</td></tr>
-        <tr><td>Stock</td><td>{{ object.stock }}</td></tr>
+        <tr><td>Taux de TVA</td><td>{% if object.tva|stringformat:"s" == "0.06" %}6&nbsp;%{% endif %}{% if object.tva|stringformat:"s" == "0.21" %}21&nbsp;%{% endif %}</td></tr>
+        <tr{% if object.stock <= object.seuil %} style="background-color:lightcoral;" {% endif %}><td>Stock</td><td>{{ object.stock }}</td></tr>
         <tr><td>Seuil</td><td>{{ object.seuil }}</td></tr>
         <tr><td>Lot</td><td>{{ object.lot  }}</td></tr>
         <tr><td>Fournisseur</td><td>{{ object.fournisseur  }}</td></tr>
