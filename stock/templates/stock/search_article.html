@@ -1,0 +1,145 @@
+{% extends "base.html" %}
+{% load barcodes %}
+{% block css %}
+        body {
+            color : #f4f379;
+            font-family : "Trebuchet MS", Verdana, Arial, sans-serif;
+            -webkit-print-color-adjust:exact;
+        }
+        div#form_container {
+            background-color : #417690;
+            color : #f4f379;
+            width : 400px;
+            height : 100px;
+            margin : 20px auto;
+            text-align : center;
+            padding : 15px;
+            -moz-border-radius: 10px;
+            -webkit-border-radius: 10px;
+            border-radius: 10px;
+            behavior: url(PIE.htc);
+        }
+
+        #floater {
+            height : 50%;
+            margin-bottom : -15px;
+        }
+
+        #formulaire {
+            height : 30px;
+            clear : both;
+            position : relative;
+        }
+
+        #formulaire label {
+            font-size : 16pt;
+        }
+        
+        div#result_container {
+            background-color : #7CA0C7;
+            color : white;
+            width : 400px;
+            height : 300px;
+            margin : 20px auto;
+            text-align : center;
+            padding : 15px;
+            -moz-border-radius: 10px;
+            -webkit-border-radius: 10px;
+            border-radius: 10px;
+            behavior: url(/static/PIE.htc);
+        }
+        
+        div#result_container table {
+            width : 100%;
+            text-align : left;
+        }
+        
+        div#result_container table td:first-child {
+            width: 40%;
+            font-weight : bold;
+        }
+        
+        div#result_container img {
+            margin : 5px;
+        }
+        table { 
+            border-spacing:0;
+            border-collapse:collapse;
+        }
+        th {
+            border-bottom : white solid 3px;
+        }
+        tr:nth-child(1) {
+            font-weight : bold;
+            border-bottom : white solid 1px;
+        }
+        td:nth-child(1) {
+            border-right : white solid 1px;
+            padding : 0px 10px;
+            margin : 0px;
+        }
+        td:last-child {
+            text-align : right;
+            padding : 0px 10px;
+            margin : 0px;
+        }
+        
+{% endblock %}
+{% block js %}
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                /*$('#code_id').keyup(function() {
+                    if ($(this).val().length == 13) {
+                        $("#formulaire").submit();
+                    }
+                });*/
+                $('#code_id').focus();
+            });
+        </script>
+{% endblock %}
+{% block title %}
+    {% if article %}
+        {{ article.nom }}
+    {% else %}
+        pas d'article
+    {% endif %}
+{% endblock %}
+{% block content %}
+        <div id="form_container">
+            <div id="floater"></div>
+            <form id="formulaire" action="/stock/article/remove_article/" method="post">
+                {% csrf_token %}
+                <label for="code_id">Code : </label><input type="text" length="50" id="code_id" name="ean"/>
+            </form>
+        </div>
+        <div id="result_container">
+            {% if article %}
+            <table>
+                <thead>
+                    <tr><th colspan='2' align='center'>
+                    {% if article.stock <= article.seuil %}
+                        <img src="{{ STATIC_URL }}img/ko_small.png" />
+                    {% else %}
+                        <img src="{{ STATIC_URL }}img/ok_small.png" />
+                    {% endif %}
+                    </th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>Nom</td><td>{{ article.nom }}</td></tr>
+                    <tr><td>Nom abrégé</td><td>{{  article.nom_court }}</td></tr>
+                    <tr><td>Prix d'achat</td><td>{{  article.prix_achat }}&nbsp;€</td></tr>
+                    <tr><td>Prix de vente</td><td>{{ article.prix_vente }}&nbsp;€</td></tr>
+                    <tr><td>Taux de TVA</td><td>{% if article.tva|stringformat:"s" == "0.06" %}6&nbsp;%{% endif %}{% if article.tva|stringformat:"s" == "0.21" %}21&nbsp;%{% endif %}</td></tr>
+                    <tr{% if article.stock <= article.seuil %} style="background-color:lightcoral;" {% endif %}><td>Stock</td><td>{{ article.stock }}</td></tr>
+                    <tr><td>Seuil</td><td>{{ article.seuil }}</td></tr>
+                    <tr><td>Lot</td><td>{{ article.lot  }}</td></tr>
+                    <tr><td>Fournisseur</td><td>{{ article.fournisseur  }}</td></tr>
+                </tbody>
+            </table>
+
+            {% else %}
+                <p>Pas d'article s&eacute;lectionn&eacute; !</p>
+            {% endif %}
+        </div>
+{% endblock %} 
