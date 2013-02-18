@@ -81,7 +81,7 @@ class Article(models.Model):
 # Ticket
 ######################
 class Ticket(models.Model):
-    moment = models.DateTimeField(default=timezone.now())
+    moment = models.DateTimeField(default=timezone.now)
     auteur = models.ForeignKey(User)
     total = models.DecimalField("Total pour ce ticket", max_digits=8, decimal_places=2, blank=True, null=True)
     
@@ -105,7 +105,7 @@ class Ticket(models.Model):
 ##########################
 class Mouvement(models.Model):
     auteur = models.ForeignKey(User)
-    moment = models.DateTimeField(default=timezone.now())
+    moment = models.DateTimeField(default=timezone.now)
     article = models.ForeignKey(Article)
     qte = models.IntegerField("Quantité",
         help_text="La quantité liée à ce mouvement, NEGATIVE pour une entrée en stock, POSITIVE pour une sortie !")

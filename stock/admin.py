@@ -19,6 +19,8 @@ class ArticleAdmin(admin.ModelAdmin):
     search_fields = ["nom", "fournisseur__nom"]
 
 class MouvementAdmin(admin.ModelAdmin):
+    list_filter = ['auteur',]
+    date_hierarchy = 'moment'
     list_display = ["moment", "auteur", "article", "qte"]
 
 class MouvementTicketInline(admin.TabularInline):

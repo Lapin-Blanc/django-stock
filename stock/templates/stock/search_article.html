@@ -88,6 +88,7 @@
 {% block js %}
         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5/jquery.min.js"></script>
         <script type="text/javascript">
+            var edited = 0;
             $(document).ready(function() {
                 /*$('#code_id').keyup(function() {
                     if ($(this).val().length == 13) {
@@ -96,6 +97,22 @@
                 });*/
                 $('#code_id').focus();
             });
+            function clear_qty() {
+                edited = 0;
+                $('#qty_id').val(1);
+                $('#code_id').focus();
+            }
+            function adjust_qty(qty) {
+                if (edited != 0)
+                {
+                    prev = $('#qty_id').val();
+                } else {
+                    prev = "";
+                    edited = 1;
+                }
+                $('#qty_id').val(prev+qty);
+                $('#code_id').focus();
+            }
         </script>
 {% endblock %}
 {% block title %}
@@ -108,9 +125,21 @@
 {% block content %}
         <div id="form_container">
             <div id="floater"></div>
-            <form id="formulaire" action="/stock/article/remove_article/" method="post">
+            <form id="formulaire" action="/stock/article/do/{{ action }}/" method="post">
                 {% csrf_token %}
-                <label for="code_id">Code : </label><input type="text" length="50" id="code_id" name="ean"/>
+                {% if action == "add" or action == "remove" %}
+                    <label for="qty_id"></label><input type="text" size="3" id="qty_id" name="qty" value="1"/>
+                    <label for="code_id"> X </label><input type="text" size="13" id="code_id" name="ean"/><input type="submit" value="OK" />
+                    <br /><br />
+                        <input type="button" value="C" onClick="clear_qty();"/>
+                    {% for i in "0123456789" %}
+                        <input type="button" value="{{ forloop.counter0 }}" onClick="adjust_qty({{ forloop.counter0 }});"/>
+                    {% endfor %}
+                {% endif %}
+                {% if action == "display" %}
+                    <label for="code_id">Code : </label><input type="text" size="13" id="code_id" name="ean"/><input type="submit" value="OK" />
+                    <br /><br />
+                {% endif %}
             </form>
         </div>
         <div id="result_container">
