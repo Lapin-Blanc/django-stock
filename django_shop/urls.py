@@ -1,7 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.views.generic.list_detail import object_detail
 from django.views.generic.simple import direct_to_template
-from stock.models import Article
+from stock.models import Article, Ticket
 
 from django.contrib import admin
 admin.autodiscover()
@@ -14,6 +14,10 @@ urlpatterns = patterns('',
     url(r'^stock/article/(?P<object_id>\d+)/$', object_detail, {'queryset' : Article.objects.all()}),
     url(r'^stock/article/(?P<action>display|add|remove)/(?P<article_ean>|\d{6,})$', "stock.views.find_article"),
     url(r'^stock/article/do/(?P<action>display|add|remove)/$', "stock.views.manage_article"),
+
+    url(r'^stock/ticket/$', 'stock.views.ticket'),
+    url(r'^stock/ticket/validate/$', 'stock.views.validate_ticket'),
+    url(r'^stock/ticket/(?P<object_id>\d+)/$', object_detail, {'queryset' : Ticket.objects.all()}),
     # docuemnts
     url(r'^documents/barcodepage/(?P<page_id>\d+)/$', 'documents.views.print_barcode_page'),
     

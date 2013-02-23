@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% block title %}Cr&eacute;ation de ticket{% endblock %}
+{% block js %}
+    <script type="text/javascript" src="{{ STATIC_URL }}admin/js/jquery.js"></script>
+    <script type="text/javascript">
+    var articles_json = {{ articles_json|safe }};
+    function search_article(articles, eancode){
+        retour = null
+        $.each(articles, function(i, v){
+            if(v.fields.ean===eancode.substring(0,12))
+                {
+                    retour =  v;
+                };
+        })
+        return retour;
+    };
+    function remove_parent_and_update(e){
+        $(e).parent().remove();
+        $('#total_id').html(parseFloat($('#total_id').html()) - $(e).parent().children().eq(4).val());
+    };
+
+    $(document).ready(function() {
+        $('input').keydown( function(e) {
+            var key = e.charCode ? e.charCode : e.keyCode ? e.keyCode : 0;
+            if(key == 13) {
+                e.preventDefault();
+                $('#btnAdd').click();
+                return false;
+            }
+        });
+        $('#original_line').hide();
+        $('#qty_id').focus();
+        $('#btnAdd').click(function() {
+            var num = $('.clonedInput').length;
+            var new_num = new Number(num + 1)
+            var article = search_article(articles_json, $('#code_ean_id').val());
+            if (article) {
+                var new_elem = $('#original_line').clone().attr('class','clonedInput').show();
+                new_elem.children().eq(0).attr('id','qty'+new_num).attr('name','qty'+new_num).val($('#qty_id').val());
+                new_elem.children().eq(1).attr('id','article'+new_num).attr('name','article'+new_num).val(article.fields.ean);
+                new_elem.children().eq(2).attr('id','nom'+new_num).attr('name','nom'+new_num).val(article.fields.nom);
+                new_elem.children().eq(3).attr('id','prix'+new_num).attr('name','prix'+new_num).val(article.fields.prix_vente);
+                new_elem.children().eq(4).attr('id','total'+new_num).attr('name','total'+new_num).val(article.fields.prix_vente * $('#qty_id').val());
+                $('#valider_id').before(new_elem);
+                $('#total_id').html(parseFloat($('#total_id').html()) + article.fields.prix_vente * $('#qty_id').val());
+                $('#code_ean_id').val('');
+                $('#qty_id').val('').focus();
+            };
+        });
+    });
+    </script>
+{% endblock %}
+{% block content %}
+        <h2>Nouveau ticket - Total&nbsp;<span id="total_id">0.00</span>&nbsp;&euro;</h2>
+        <form>
+            <input  style="float:right;" type="button" onClick="parent.location='/accounts/logout/'" value="D&eacute;connecter"/>
+            <div id="original_line">
+                <input type="text" name="qty" size="5" />
+                <input type="hidden" name="ean" size="20" />
+                <input type="text" name="nom" size="20" readonly/>
+                <input type="text" name="prix" size="5" readonly/>
+                <input type="text" name="total" size="5" readonly/>
+                <input type="button" onClick="remove_parent_and_update(this);" value="supprimer" />
+            </div>
+            <input type="text" id="qty_id" name="qty" size="5"/>
+            <input type="text" id="code_ean_id" name="code_ean"/>
+            <input type="button" id="btnAdd" value="ajouter"/>
+            <hr />
+        </form>
+
+        <form method="post" action="validate/">
+            <div id="ticket">
+            
+            <input type="submit" id="valider_id" value="valider" />
+            </div>
+        {% csrf_token %}    
+        </form>
+{% endblock %}
