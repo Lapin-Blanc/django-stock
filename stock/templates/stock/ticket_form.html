@@ -16,7 +16,7 @@
     };
     function remove_parent_and_update(e){
         $(e).parent().remove();
-        $('#total_id').html(parseFloat($('#total_id').html()) - $(e).parent().children().eq(4).val());
+        $('#total_id').html(Math.round((parseFloat($('#total_id').html()) - $(e).parent().children().eq(4).val())*100)/100);
     };
 
     $(document).ready(function() {
@@ -40,9 +40,9 @@
                 new_elem.children().eq(1).attr('id','article'+new_num).attr('name','article'+new_num).val(article.fields.ean);
                 new_elem.children().eq(2).attr('id','nom'+new_num).attr('name','nom'+new_num).val(article.fields.nom);
                 new_elem.children().eq(3).attr('id','prix'+new_num).attr('name','prix'+new_num).val(article.fields.prix_vente);
-                new_elem.children().eq(4).attr('id','total'+new_num).attr('name','total'+new_num).val(article.fields.prix_vente * $('#qty_id').val());
+                new_elem.children().eq(4).attr('id','total'+new_num).attr('name','total'+new_num).val( Math.round(article.fields.prix_vente * $('#qty_id').val()*100 )/100 );
                 $('#valider_id').before(new_elem);
-                $('#total_id').html(parseFloat($('#total_id').html()) + article.fields.prix_vente * $('#qty_id').val());
+                $('#total_id').html(parseFloat($('#total_id').html()) + (Math.round(article.fields.prix_vente * $('#qty_id').val()*100)/100));
                 $('#code_ean_id').val('');
                 $('#qty_id').val('').focus();
             };
@@ -53,7 +53,9 @@
 {% block content %}
         <h2>Nouveau ticket - Total&nbsp;<span id="total_id">0.00</span>&nbsp;&euro;</h2>
         <form>
+            <!--
             <input  style="float:right;" type="button" onClick="parent.location='/accounts/logout/'" value="D&eacute;connecter"/>
+            -->
             <div id="original_line">
                 <input type="text" name="qty" size="5" />
                 <input type="hidden" name="ean" size="20" />
