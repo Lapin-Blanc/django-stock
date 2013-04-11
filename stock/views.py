@@ -27,7 +27,10 @@ def find_article(request, article_ean, action):
 def manage_article(request, action):    
     if request.POST:
         try:
-            article = Article.objects.get(ean=request.POST["ean"][:-1])
+            ean = request.POST["ean"]
+            if len(ean)==13:
+                ean = ean[:-1]
+            article = Article.objects.get(ean=ean)
             qty = request.POST.get("qty", None)
             if qty and qty.isdigit():
                qty = int(qty)

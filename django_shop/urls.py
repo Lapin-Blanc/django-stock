@@ -12,7 +12,7 @@ urlpatterns = patterns('',
     
     # stock
     url(r'^stock/article/(?P<object_id>\d+)/$', object_detail, {'queryset' : Article.objects.all()}),
-    url(r'^stock/article/(?P<action>display|add|remove)/(?P<article_ean>|\d{6,})$', "stock.views.find_article"),
+    url(r'^stock/article/(?P<action>display|add|remove)/(?P<article_ean>|\d{12,13})$', "stock.views.find_article"),
     url(r'^stock/article/do/(?P<action>display|add|remove)/$', "stock.views.manage_article"),
 
     url(r'^stock/ticket/$', 'stock.views.ticket'),
