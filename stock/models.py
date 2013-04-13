@@ -50,7 +50,7 @@ class Article(models.Model):
         (Decimal(".06"), '6%'),
         (Decimal(".21"), '21%'),
     )
-    nom = models.CharField(max_length=200,
+    nom = models.CharField("Nom", max_length=200,
         help_text="Le nom complet de l'article")
     nom_court = models.SlugField("Nom abrégé", max_length=50,
         help_text="Le nom abrégé de l'article, généré automatiquement")
@@ -74,6 +74,7 @@ class Article(models.Model):
         return "/stock/article/%s/" % self.id
 
     def approvisionnement(self):
+        "Retourne VRAI si la quantité en stock est toujours OK"
         return self.stock > self.seuil
     approvisionnement.boolean = True
 
