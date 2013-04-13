@@ -10,7 +10,7 @@
                 <th>Quantité</th>
                 <th style="text-align:left;">Libellé</th>
                 <th>Prix unitaire</th>
-                <th>Total hors taxes</th>
+                <th>Total HTVA</th>
                 <th>TVA</th>
                 <th>Total</th>
             </tr>
@@ -19,8 +19,8 @@
         <tr>
             <td>{{ line.qte }}</td>
             <td style="width:250px;">{{ line.article }}</td>
-            <td style="text-align:right;">{{ line.article.prix_vente|floatformat:"2" }}&nbsp;€</td>
-            <td style="text-align:right;">{{ line.total_htva|floatformat:"2" }}&nbsp;€</td>
+            <td style="text-align:left;">{{ line.article.prix_vente|floatformat:"2" }}&nbsp;€</td>
+            <td style="text-align:left;">{{ line.total_htva|floatformat:"2" }}&nbsp;€</td>
             <td style="text-align:right;">{{ line.total_tva|floatformat:"2" }}&nbsp;€</td>
             <td style="text-align:right;">{{ line.total_ttc|floatformat:"2" }}&nbsp;€</td>
         </tr>
@@ -32,5 +32,4 @@
     </table>
     <br />
     <br />
-    <input type="button" onClick="parent.location=/stock/" value="retour"/>
 {% endblock %}

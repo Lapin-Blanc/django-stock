@@ -91,6 +91,9 @@ class Ticket(models.Model):
     def __unicode__(self):
         return u"%s - %s" % (self.moment, self.auteur)
     
+    def get_absolute_url(self):
+        return "/stock/ticket/%s/" % self.id
+
     def save(self, *args, **kwargs):
         self.total = self.mouvementticket_set.aggregate(models.Sum("total_ttc"))['total_ttc__sum']
         super(Ticket, self).save(*args, **kwargs)
